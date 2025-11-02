@@ -1,0 +1,128 @@
+# Implementing Backtracking and Branch & Bound for N-Queens Problem
+
+# Function to print the chessboard
+def print_board(board, n):
+    for i in range(n):
+        for j in range(n):
+            if board[i][j] == 1:
+                print("Q", end=" ")
+            else:
+                print(".", end=" ")
+        print()
+    print()
+
+# --------------------------------------------------
+# BACKTRACKING APPROACH
+# --------------------------------------------------
+
+def is_safe_backtracking(board, row, col, n):
+    # Check column
+    for i in range(row):
+        if board[i][col] == 1:
+            return False
+
+    # Check upper-left diagonal
+    i, j = row - 1, col - 1
+    while i >= 0 and j >= 0:
+        if board[i][j] == 1:
+            return False
+        i -= 1
+        j -= 1
+
+    # Check upper-right diagonal
+    i, j = row - 1, col + 1
+    while i >= 0 and j < n:
+        if board[i][j] == 1:
+            return False
+        i -= 1
+        j += 1
+
+    return True
+
+def solve_backtracking(board, row, n):
+    if row >= n:
+        return True  # All queens placed successfully
+
+    for col in range(n):
+        if is_safe_backtracking(board, row, col, n):
+            board[row][col] = 1
+            if solve_backtracking(board, row + 1, n):
+                return True
+            board[row][col] = 0  # Backtrack
+
+    return False
+
+def n_queens_backtracking(n):
+    board = [[0] * n for _ in range(n)]
+    if solve_backtracking(board, 0, n):
+        print("\nSolution using Backtracking:")
+        print_board(board, n)
+    else:
+        print("No solution exists!")
+
+# --------------------------------------------------
+# BRANCH AND BOUND APPROACH
+# --------------------------------------------------
+
+def solve_branch_and_bound(board, row, cols, left_diagonals, right_diagonals, n):
+    if row >= n:
+        return True
+
+    for col in range(n):
+        if not cols[col] and not left_diagonals[row - col + n - 1] and not right_diagonals[row + col]:
+            # Place queen
+            board[row][col] = 1
+            cols[col] = left_diagonals[row - col + n - 1] = right_diagonals[row + col] = True
+
+            if solve_branch_and_bound(board, row + 1, cols, left_diagonals, right_diagonals, n):
+                return True
+
+            # Remove (Backtrack)
+            board[row][col] = 0
+            cols[col] = left_diagonals[row - col + n - 1] = right_diagonals[row + col] = False
+
+    return False
+
+def n_queens_branch_and_bound(n):
+    board = [[0] * n for _ in range(n)]
+    cols = [False] * n
+    left_diagonals = [False] * (2 * n - 1)
+    right_diagonals = [False] * (2 * n - 1)
+
+    if solve_branch_and_bound(board, 0, cols, left_diagonals, right_diagonals, n):
+        print("\nSolution using Branch and Bound:")
+        print_board(board, n)
+    else:
+        print("No solution exists!")
+
+# --------------------------------------------------
+# MENU-DRIVEN PROGRAM
+# --------------------------------------------------
+
+def main():
+    while True:
+        print("\n=== N-Queens Problem ===")
+        print("1. Solve using Backtracking")
+        print("2. Solve using Branch and Bound")
+        print("3. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            n = int(input("Enter the value of N: "))
+            n_queens_backtracking(n)
+
+        elif choice == "2":
+            n = int(input("Enter the value of N: "))
+            n_queens_branch_and_bound(n)
+
+        elif choice == "3":
+            print("Exiting Program...")
+            break
+
+        else:
+            print("Invalid choice! Please try again.")
+
+# Run the program
+if __name__ == "__main__":
+    main()
