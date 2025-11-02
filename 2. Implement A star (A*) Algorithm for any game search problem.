@@ -1,0 +1,138 @@
+# Best First Search and A* Algorithm Implementation
+
+import math
+import heapq
+
+# Grid (1 = free cell, 0 = blocked)
+grid = [
+    [1, 0, 1, 1, 1, 1, 0, 1, 1, 1],
+    [1, 1, 1, 0, 1, 1, 1, 0, 1, 1],
+    [1, 1, 1, 0, 1, 1, 0, 1, 0, 1],
+    [0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
+    [1, 1, 1, 0, 1, 1, 1, 0, 1, 0],
+    [1, 0, 1, 1, 1, 1, 0, 1, 0, 0],
+    [1, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+    [1, 0, 1, 1, 1, 1, 0, 1, 1, 1],
+    [1, 1, 1, 0, 0, 0, 1, 0, 0, 1]
+]
+
+ROWS = len(grid)
+COLS = len(grid[0])
+
+# Source and destination
+src = (8, 0)
+dest = (0, 0)
+
+
+def is_valid(x, y):
+    """Check if cell is inside grid and not blocked"""
+    return 0 <= x < ROWS and 0 <= y < COLS and grid[x][y] == 1
+
+
+def heuristic(a, b):
+    """Heuristic function: Euclidean distance"""
+    return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
+
+
+def trace_path(parent, dest):
+    """Reconstruct path from parent dictionary"""
+    path = []
+    node = dest
+    while node in parent:
+        path.append(node)
+        node = parent[node]
+    path.reverse()
+    return path
+
+
+# ---------------- A* Search Algorithm -----------------
+def a_star(start, goal):
+    print("\n--- A* Search ---")
+    open_list = []
+    heapq.heappush(open_list, (0, start))
+    g_score = {start: 0}
+    parent = {}
+
+    while open_list:
+        _, current = heapq.heappop(open_list)
+
+        if current == goal:
+            print("Destination found!")
+            path = trace_path(parent, goal)
+            print("Path:", path)
+            print("Path length:", len(path))
+            return
+
+        # Explore neighbors
+        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1),
+                       (-1, -1), (-1, 1), (1, -1), (1, 1)]:
+            neighbor = (current[0] + dx, current[1] + dy)
+            if not is_valid(*neighbor):
+                continue
+
+            tentative_g = g_score[current] + math.sqrt(dx * dx + dy * dy)
+
+            if neighbor not in g_score or tentative_g < g_score[neighbor]:
+                g_score[neighbor] = tentative_g
+                f_score = tentative_g + heuristic(neighbor, goal)
+                heapq.heappush(open_list, (f_score, neighbor))
+                parent[neighbor] = current
+
+    print("Failed to find destination.")
+
+
+# ---------------- Best First Search Algorithm -----------------
+def best_first_search(start, goal):
+    print("\n--- Best First Search ---")
+    open_list = []
+    heapq.heappush(open_list, (heuristic(start, goal), start))
+    visited = set()
+    parent = {}
+
+    while open_list:
+        _, current = heapq.heappop(open_list)
+
+        if current == goal:
+            print("Destination found!")
+            path = trace_path(parent, goal)
+            print("Path:", path)
+            print("Path length:", len(path))
+            return
+
+        visited.add(current)
+
+        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1),
+                       (-1, -1), (-1, 1), (1, -1), (1, 1)]:
+            neighbor = (current[0] + dx, current[1] + dy)
+            if is_valid(*neighbor) and neighbor not in visited:
+                parent[neighbor] = current
+                heapq.heappush(open_list, (heuristic(neighbor, goal), neighbor))
+
+    print("Failed to find destination.")
+
+
+# ---------------- Menu -----------------
+def menu():
+    while True:
+        print("\n===== Heuristic Search Techniques =====")
+        print("1. Best First Search")
+        print("2. A* Search")
+        print("3. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            best_first_search(src, dest)
+        elif choice == '2':
+            a_star(src, dest)
+        elif choice == '3':
+            print("Exiting program.")
+            break
+        else:
+            print("Invalid choice! Try again.")
+
+
+# ----------- Driver Code -----------
+if __name__ == "__main__":
+    menu()
+
