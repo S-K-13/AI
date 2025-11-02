@@ -1,0 +1,187 @@
+# Tic Tac Toe using Non-AI (Random) and AI (Minimax + Alpha-Beta) techniques
+
+import math
+import random
+
+# Function to print the board
+def print_board(board):
+    print("\n")
+    for i in range(3):
+        print(" | ".join(board[i*3:(i+1)*3]))
+        if i < 2:
+            print("---------")
+    print("\n")
+
+# Function to check winner
+def check_winner(board):
+    win_combinations = [
+        (0,1,2), (3,4,5), (6,7,8),  # rows
+        (0,3,6), (1,4,7), (2,5,8),  # columns
+        (0,4,8), (2,4,6)            # diagonals
+    ]
+    for a, b, c in win_combinations:
+        if board[a] == board[b] == board[c] and board[a] != " ":
+            return board[a]
+    return None
+
+# Function to check if board is full
+def is_full(board):
+    return " " not in board
+
+# ---------- NON-AI VERSION (RANDOM MOVES) ----------
+def random_move(board):
+    available = [i for i in range(9) if board[i] == " "]
+    return random.choice(available) if available else -1
+
+def non_ai_game():
+    board = [" "] * 9
+    print("Welcome to Tic Tac Toe (Non-AI Version)")
+    print("You are 'X' and Computer is 'O'")
+    print_board(board)
+
+    while True:
+        # Human move
+        try:
+            pos = int(input("Enter your move (1-9): ")) - 1
+            if pos < 0 or pos > 8 or board[pos] != " ":
+                print("Invalid move! Try again.")
+                continue
+        except ValueError:
+            print("Please enter a valid number between 1 and 9.")
+            continue
+
+        board[pos] = "X"
+        print_board(board)
+
+        if check_winner(board):
+            print("🎉 You win!")
+            break
+        if is_full(board):
+            print("It's a draw!")
+            break
+
+        # Random computer move
+        print("💻 Computer is playing (Non-AI random move)...")
+        ai_pos = random_move(board)
+        board[ai_pos] = "O"
+        print_board(board)
+
+        if check_winner(board):
+            print("💻 Computer wins!")
+            break
+        if is_full(board):
+            print("It's a draw!")
+            break
+
+# ---------- AI VERSION (MINIMAX + ALPHA-BETA) ----------
+def minimax(board, depth, is_maximizing, alpha, beta):
+    winner = check_winner(board)
+    if winner == "O":  # AI wins
+        return 1
+    elif winner == "X":  # Human wins
+        return -1
+    elif is_full(board):
+        return 0  # Draw
+
+    if is_maximizing:
+        max_eval = -math.inf
+        for i in range(9):
+            if board[i] == " ":
+                board[i] = "O"
+                eval = minimax(board, depth + 1, False, alpha, beta)
+                board[i] = " "
+                max_eval = max(max_eval, eval)
+                alpha = max(alpha, eval)
+                if beta <= alpha:
+                    break
+        return max_eval
+    else:
+        min_eval = math.inf
+        for i in range(9):
+            if board[i] == " ":
+                board[i] = "X"
+                eval = minimax(board, depth + 1, True, alpha, beta)
+                board[i] = " "
+                min_eval = min(min_eval, eval)
+                beta = min(beta, eval)
+                if beta <= alpha:
+                    break
+        return min_eval
+
+def best_move(board):
+    best_val = -math.inf
+    move = -1
+    for i in range(9):
+        if board[i] == " ":
+            board[i] = "O"
+            move_val = minimax(board, 0, False, -math.inf, math.inf)
+            board[i] = " "
+            if move_val > best_val:
+                best_val = move_val
+                move = i
+    return move
+
+def ai_game():
+    board = [" "] * 9
+    print("Welcome to Tic Tac Toe (AI Version - Minimax)")
+    print("You are 'X' and AI is 'O'")
+    print_board(board)
+
+    while True:
+        # Human move
+        try:
+            pos = int(input("Enter your move (1-9): ")) - 1
+            if pos < 0 or pos > 8 or board[pos] != " ":
+                print("Invalid move! Try again.")
+                continue
+        except ValueError:
+            print("Please enter a valid number between 1 and 9.")
+            continue
+
+        board[pos] = "X"
+        print_board(board)
+
+        if check_winner(board):
+            print("🎉 You win!")
+            break
+        if is_full(board):
+            print("It's a draw!")
+            break
+
+        # AI move
+        print("💻 AI is thinking using Minimax...")
+        ai_pos = best_move(board)
+        board[ai_pos] = "O"
+        print_board(board)
+
+        if check_winner(board):
+            print("💻 AI wins!")
+            break
+        if is_full(board):
+            print("It's a draw!")
+            break
+
+# ---------- MENU-DRIVEN MAIN FUNCTION ----------
+def main():
+    while True:
+        print("\n--- TIC TAC TOE ---")
+        print("1. Non-AI Version (Random Moves)")
+        print("2. AI Version (Minimax with Alpha-Beta)")
+        print("3. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            non_ai_game()
+        elif choice == "2":
+            ai_game()
+        elif choice == "3":
+            print("Exiting the game... Goodbye!")
+            break
+        else:
+            print("Invalid choice! Please try again.")
+
+# Run program
+if __name__ == "__main__":
+    main()
+
+
