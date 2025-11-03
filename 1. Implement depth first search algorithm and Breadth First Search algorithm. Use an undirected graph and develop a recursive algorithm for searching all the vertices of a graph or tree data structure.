@@ -56,3 +56,75 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+2. BREADTH FIRST SEARCH (BFS):
+
+
+from collections import deque
+
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+    traversal = []
+    visited.add(start)
+
+    while queue:
+        node = queue.popleft()
+        traversal.append(node)
+        for neighbor in graph.get(node, []):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+    return traversal
+
+def main():
+    graph = {}
+
+    while True:
+        print("\nBFS Menu:")
+        print("1. Add edge (undirected)")
+        print("2. Show graph")
+        print("3. Perform BFS Traversal")
+        print("4. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            u = input("Enter vertex 1: ")
+            v = input("Enter vertex 2: ")
+
+            if u not in graph:
+                graph[u] = []
+            if v not in graph:
+                graph[v] = []
+
+            graph[u].append(v)
+            graph[v].append(u)
+            print(f"Edge added between {u} and {v}")
+
+        elif choice == '2':
+            print("Graph adjacency list:")
+            for node in graph:
+                print(f"{node}: {graph[node]}")
+
+        elif choice == '3':
+            start = input("Enter starting vertex for BFS: ")
+            if start not in graph:
+                print("Vertex not found in graph.")
+            else:
+                traversal = bfs(graph, start)
+                print("BFS Traversal Order:", traversal)
+
+        elif choice == '4':
+            print("Exiting BFS program...")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
+
