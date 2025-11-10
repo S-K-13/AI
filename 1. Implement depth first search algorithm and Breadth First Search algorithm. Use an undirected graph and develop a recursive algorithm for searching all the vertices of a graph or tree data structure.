@@ -128,3 +128,42 @@ def main():
 if __name__ == "__main__":
     main()
 
+
+
+🧠 1. Depth-First Search (DFS)
+
+This program performs Depth-First Search on an undirected graph using recursion.
+
+The graph is stored as an adjacency list (a dictionary where each key is a vertex and its value is a list of connected vertices).
+
+The function dfs(graph, node, visited, traversal) explores all nodes starting from a given vertex.
+
+It marks the current node as visited (visited.add(node)),
+
+Appends it to the traversal list to record visit order, and
+
+Recursively calls dfs() on every unvisited neighbor.
+
+The main() function shows a simple menu system where users can add undirected edges, display the adjacency list, and perform DFS.
+
+Because it uses recursion, DFS goes deep into one path first before backtracking, ensuring all connected vertices are explored.
+
+Time complexity: O(V + E) where V = vertices, E = edges.
+
+Space complexity: O(V) due to the recursion stack and the visited set.
+
+⚙️ 2. Breadth-First Search (BFS)
+
+The BFS program explores the same undirected graph but in level order using a queue from the collections.deque module.
+
+The bfs(graph, start) function starts with a given vertex, marks it as visited, and pushes it into the queue.
+
+Then, while the queue is not empty, it pops the front node, adds it to the traversal list, and pushes all unvisited neighbors into the queue.
+
+This ensures nodes are visited layer by layer, discovering all vertices that are one edge away before moving deeper.
+
+The main() function again provides a menu where the user can add edges, view the graph, and run BFS traversal.
+
+Unlike DFS, BFS uses iteration, not recursion, and is ideal for finding the shortest path in an unweighted graph.
+
+Time complexity: O(V + E); Space complexity: O(V) because of the queue and visited set.
